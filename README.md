@@ -31,6 +31,32 @@ $ pm2 start webhook.js --name webhook -e ./logs/error.log -o ./logs/out.log
 
 
 这时候你push代码到gitee，服务器会自动同步你gitee的代码，完成部署
+## Gitee - WebHooks
+为了能够处理`Gitee`的`WebHooks`` Push`钩子，我们需要在服务器上配置启动相应的`WebHooks Handler`，用来处理`Post`请求。
+简单来说就是在服务器启动一个Http服务，提供Post请求接口，Gitee会在代码被push更新之后给服务器上的这个接口发送`Post`请求，而这个接口的作用就是触发自动化部署的脚本。
+
+
+具体的流程大概如下：
+
+- 首先，本地的`vue`项目代码更新之后，通过`git`推送到`Gitee`仓库中。
+- 然后，`Gitee`触发`WebHooks`，即触发相应的钩子，并向服务器发送POST请求。
+- 最后，服务器接收到`Gitee`发送过来的请求后，触发自动化部署脚本，进行拉取代码、重新打包、进行部署。
+
+当前，`Gitee`支持的5种类型的钩子，如下：
+
+1、`Push`: 仓库推送代码、推送 / 删除分支
+
+2、`Tag Push`: 新建 / 删除 tag
+
+3、`Issue`: 新建任务、变更任务状态、更改任务指派人
+
+4、`Pull Request`: 新建、更新pr代码、合并 `Pull Request`
+
+5、评论: 评论仓库、任务、`Pull Request`、`Commit`
+
+由于只需要实现`vue`、`node`项目的自动化部署即可，我这边的话就只选择了`Push`钩子。
+
+具体配置如下
 
 ## 细节解释
 ### webhook.js
